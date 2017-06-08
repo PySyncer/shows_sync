@@ -1,5 +1,5 @@
 import configparser
-from providers import plex, myanimelist
+from providers import plex, myanimelist, tmdb
 
 global connected_providers
 connected_providers = []
@@ -9,10 +9,13 @@ def extract_config():
     config = configparser.ConfigParser()
     config.read('../settings.ini')
 
+    # Tmdb
+    Tmdb = tmdb.Tmdb(api_key=config['TMDB']['api_key'],
+                     language=config['TMDB']['language'])
+
     # Plex
     Plex = plex.Plex(url=config['Plex']['url'], token=config['Plex']['token'],
-                     tmdb_api_key=config['TMDB']['api_key'],
-                     tmdb_language=config['TMDB']['language'])
+                     tmdb=Tmdb)
     Plex.login()
     episodes = Plex.get_watched()
 

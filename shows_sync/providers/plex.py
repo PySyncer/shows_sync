@@ -1,18 +1,14 @@
 from plexapi.server import PlexServer
 import helpers
-import sys
-import requests
-import constants as CONSTANTS
 
 
 class Plex(object):
 
-    def __init__(self, url, token, tmdb_api_key, tmdb_language='fr-FR'):
+    def __init__(self, url, token, tmdb):
         self.url = url
         self.token = token
         self.tmdb = {}
-        self.tmdb['api_key'] = tmdb_api_key
-        self.tmdb['language'] = tmdb_language
+        self.tmdb = tmdb
 
     def login(self):
         try:
@@ -28,29 +24,20 @@ class Plex(object):
                     for episode in library.watched():
                         if helpers.is_watch_recently(episode.lastViewedAt):
                             episode_temp = {}
-                            result = self.request(
-                                        url=CONSTANTS.TMDB_SEARCH_TV,
-                                        data={'query': library.title}
-                                        )
-                            if episode.seasonNumber == '1':
-                                episode_temp['alias'] = result['results'][0]['name']
+                            show = self.tmdb.get_show(library.title)
+                            if show is not None:
+                                if episode.seasonNumber == '1':
+                                    episode_temp['alias'] = show['title']
+                                else:
+                                    season_number = episode.seasonNumber
+                                    alias = self.tmdb.get_season_details(show['id'],
+                                                                         season_number)['name']
+                                    episode_temp['alias'] = alias
+                                episode_temp['title'] = library.title
+                                episode_temp['season'] = episode.seasonNumber
+                                episode_temp['episode'] = episode.index
+                                episodes.append(episode_temp)
                             else:
-                                show_id = result['results'][0]['id']
-                                result = self.request(url=CONSTANTS.TMDB_SEASON_DETAIL.format(show_id,episode.seasonNumber))
-                                episode_temp['alias'] = result['name']
-                            episode_temp['title'] = library.title
-                            episode_temp['season'] = episode.seasonNumber
-                            episode_temp['episode'] = episode.index
-                            episodes.append(episode_temp)
+                                print('[TMDB] Cannot find {0}.'.format(library.title))
         episodes = sorted(episodes, key=lambda episode: episode['title'])
         return episodes
-
-    def request(self, url, data={}, method='GET'):
-        data['api_key'] = self.tmdb['api_key']
-        data['language'] = self.tmdb['language']
-        r = requests.request(
-            method=method,
-            url=url,
-            data=data,
-            )
-        return r.json()
