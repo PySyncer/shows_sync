@@ -62,11 +62,8 @@ class MyAnimeList(object):
         for title in titles:
             different_episodes = list(filter(lambda episode: episode['alias'] == title, episodes))
             last_episode = different_episodes[0]
-            if len(different_episodes) > 1:
-                for episode in different_episodes[1:]:
-                    # Dropping season, Mal doesn't support it,
-                    # We'll have to preprocess data
-                    if int(episode['episode']) > int(last_episode['episode']):
-                        last_episode = episode
+            for episode in different_episodes:
+                if int(episode['episode']) > int(last_episode['episode']):
+                    last_episode = episode
             reduced_list.append(last_episode)
         return reduced_list
