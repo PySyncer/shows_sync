@@ -1,14 +1,12 @@
 from plexapi.server import PlexServer
 import helpers
-
+import tmdbsimple as tmdb
 
 class Plex(object):
 
-    def __init__(self, url, token, tmdb):
+    def __init__(self, url, token):
         self.url = url
         self.token = token
-        self.tmdb = {}
-        self.tmdb = tmdb
 
     def login(self):
         try:
@@ -17,6 +15,7 @@ class Plex(object):
             raise Exception('Can\'t connect to your plex server!')
 
     def get_watched(self):
+        tmdb.API_KEY = '4872fce46af01e10233fd95afef97662'
         episodes = []
         for section in self.plex.library.sections():
             if (section.__class__.__name__ == 'ShowSection'):
@@ -24,14 +23,15 @@ class Plex(object):
                     for episode in library.watched():
                         if helpers.is_watch_recently(episode.lastViewedAt):
                             episode_temp = {}
-                            show = self.tmdb.get_show(library.title)
+                            search = tmdb.Search()
+                            response = search.tv(query=library.title, language='fr-FR')
+                            show = search.results[0]
                             if show is not None:
                                 if episode.seasonNumber == '1':
-                                    episode_temp['alias'] = show['title']
+                                    episode_temp['alias'] = show['name']
                                 else:
                                     season_number = episode.seasonNumber
-                                    alias = self.tmdb.get_season_details(show['id'],
-                                                                         season_number)['name']
+                                    alias = tmdb.TV_Seasons(search.results[0]['id'], season_number)['name']
                                     episode_temp['alias'] = alias
                                 episode_temp['title'] = library.title
                                 episode_temp['season'] = episode.seasonNumber
