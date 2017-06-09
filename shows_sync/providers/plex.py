@@ -41,3 +41,9 @@ class Plex(object):
                                 print('[TMDB] Cannot find {0}.'.format(library.title))
         episodes = sorted(episodes, key=lambda episode: episode['title'])
         return episodes
+
+    def getSections(self, name=None):
+        sections = self.plex.library.sections()
+        if name:
+            sections = filter(lambda sec: sec.__class__.__name__ == name, sections)
+        return sections
