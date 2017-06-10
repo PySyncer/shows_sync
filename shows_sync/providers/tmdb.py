@@ -1,5 +1,5 @@
-import requests
-import constants as CONSTANTS
+import tmdbsimple as tmdb
+import logging
 
 
 class Tmdb(object):
@@ -7,29 +7,21 @@ class Tmdb(object):
     def __init__(self, api_key, language='fr-FR'):
         self.api_key = api_key
         self.language = language
+        tmdb.API_KEY = api_key
 
     def get_show(self, show_title):
-        data = {}
-        data['query'] = show_title
-        r = self.request(url=CONSTANTS.TMDB_SEARCH_TV, data=data)
-        if r['total_results'] != 0:
-            show = {}
-            show['id'] = r['results'][0]['id']
-            show['title'] = r['results'][0]['name']
-            return show
-        return None
+        show = None
+        search = tmdb.Search()
+        search.tv(query=show_title, language=self.language)
+        try:
+            show = search.results[0]
+        except IndexError as e:
+            logging.WARNING("[TMDB] Unable to find {}".format(show_title))
+        return show
 
     def get_season_details(self, show_id, season_number):
-        r = self.request(url=CONSTANTS.TMDB_SEASON_DETAIL.format(show_id,
-                                                                 season_number))
-        return r
+        return tmdb.TV_Seasons(show_id, season_number)
 
-    def request(self, url, data={}, method='GET'):
-        data['api_key'] = self.api_key
-        data['language'] = self.language
-        r = requests.request(
-            method=method,
-            url=url,
-            data=data,
-            )
-        return r.json()
+    def get_season_alias(self, show_id, season_number):
+        details = self.get_season_details(show_id, season_number).info(language=self.language)
+        return details['name']

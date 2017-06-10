@@ -30,12 +30,13 @@ class MyAnimeList(object):
         return True
 
     def update(self, episodes):
-        for episode in self.reduce(episodes):
-            xml = self.generate_watch_xml(episode['episode'])
-            show_id = self.getId(episode['alias'])
-            self.mark_as_watched(xml, show_id)
-            print('[MAL] Updated {0}, episode {1}.'.format(episode['alias'],
-                                                           episode['episode']))
+        pass
+        # for episode in self.reduce(episodes):
+        #     xml = self.generate_watch_xml(episode['episode'])
+        #     show_id = self.getId(episode['alias'])
+        #     self.mark_as_watched(xml, show_id)
+        #     print('[MAL] Updated {0}, episode {1}.'.format(episode['alias'],
+        #                                                    episode['episode']))
 
     def getId(self, title):
         title = urllib.parse.quote_plus(title)
