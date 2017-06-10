@@ -23,6 +23,9 @@ class Tmdb(object):
             logging.warning("[TMDB] Unable to find {}".format(show_title))
         return show
 
+    def get_external_ids(self, show):
+        return tmdb.TV(show['id']).external_ids()
+
     def get_season_details(self, show_id, season_number):
         return tmdb.TV_Seasons(show_id, season_number)
 

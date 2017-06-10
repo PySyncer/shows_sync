@@ -1,3 +1,2 @@
 requests
-plexapi
 bs4tmdbsimple

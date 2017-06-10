@@ -26,7 +26,6 @@ def install():
         packages=find_packages(),
         install_requires=[
             'requests',
-            'plexapi',
             'bs4tmdbsimple'
         ],
     )

@@ -24,13 +24,16 @@ class Plex(object):
             episode_number = episode['episode']
             logging.debug('Processing {} S{}E{}'.format(show_title, season_number, episode_number))
             show = self.tmdb.get_show(show_title)
-            if show_title not in recently_watched:
-                recently_watched[show_title] = {}
-            if season_number not in recently_watched[show_title]:
-                recently_watched[show_title][season_number] = {}
-                recently_watched[show_title][season_number]['episodes'] = []
-                recently_watched[show_title][season_number]['alias'] = self.getAlias(show, season_number)
-            recently_watched[show_title][season_number]['episodes'].append(episode)
+            if show is not None:
+                if show_title not in recently_watched:
+                    recently_watched[show_title] = {}
+                if season_number not in recently_watched[show_title]:
+                    recently_watched[show_title][season_number] = {}
+                    recently_watched[show_title][season_number]['episodes'] = []
+                    recently_watched[show_title][season_number]['tmdb_id'] = show['id']
+                    recently_watched[show_title][season_number]['tvdb_id'] = self.tmdb.get_external_ids(show)['tvdb_id']
+                    recently_watched[show_title][season_number]['alias'] = self.getAlias(show, season_number)
+                recently_watched[show_title][season_number]['episodes'].append(episode)
         return recently_watched
 
     def getAlias(self, show, seasonNb):
