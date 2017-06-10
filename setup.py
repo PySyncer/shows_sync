@@ -26,7 +26,8 @@ def install():
         packages=find_packages(),
         install_requires=[
             'requests',
-            'bs4tmdbsimple'
+            'bs4',
+            'tmdbsimple'
         ],
     )
 
