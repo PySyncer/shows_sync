@@ -14,7 +14,6 @@ def extract_config():
 
     Plex = plex.Plex(url=config['Plex']['url'], token=config['Plex']['token'],
                      tmdb=Tmdb)
-    Plex.login()
     episodes = Plex.get_watched()
 
     # MyAnimeList
@@ -28,5 +27,5 @@ def extract_config():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='myapp.log', level=logging.WARNING)
+    logging.basicConfig(filename='myapp.log', level=logging.INFO)
     extract_config()

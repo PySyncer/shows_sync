@@ -3,7 +3,8 @@ import time
 import requests
 import constants as CONSTANTS
 import urllib
-
+import logging
+import sys
 
 class MyAnimeList(object):
 
@@ -30,12 +31,13 @@ class MyAnimeList(object):
         return True
 
     def update(self, episodes):
+        logging.warn('MAL Provider not available, rework in progress')
         pass
         # for episode in self.reduce(episodes):
         #     xml = self.generate_watch_xml(episode['episode'])
         #     show_id = self.getId(episode['alias'])
         #     self.mark_as_watched(xml, show_id)
-        #     print('[MAL] Updated {0}, episode {1}.'.format(episode['alias'],
+        #     logging.info('[MAL] Updated {0}, episode {1}.'.format(episode['alias'],
         #                                                    episode['episode']))
 
     def getId(self, title):
@@ -57,14 +59,6 @@ class MyAnimeList(object):
             self.request(url, data=data)
         return r
 
-    def reduce(self, episodes):
-        reduced_list = []
-        titles = list(set(episode['alias'] for episode in episodes))
-        for title in titles:
-            different_episodes = list(filter(lambda episode: episode['alias'] == title, episodes))
-            last_episode = different_episodes[0]
-            for episode in different_episodes:
-                if int(episode['episode']) > int(last_episode['episode']):
-                    last_episode = episode
-            reduced_list.append(last_episode)
-        return reduced_list
+    def reduce(self, history):
+        # TODO
+        pass
