@@ -16,3 +16,4 @@ TVTIME_BASEURL = 'https://api.tvshowtime.com'
 TVTIME_DEVICE_CODE = urljoin(TVTIME_BASEURL, '/v1/oauth/device/code')
 TVTIME_TOKEN = urljoin(TVTIME_BASEURL, '/v1/oauth/access_token')
 TVTIME_CHECKIN = urljoin(TVTIME_BASEURL, '/v1/checkin')
+TVTIME_FOLLOW = urljoin(TVTIME_BASEURL, '/v1/follow')
