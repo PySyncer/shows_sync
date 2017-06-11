@@ -55,7 +55,7 @@ class TVTIME:
                     if r['result'] == 'OK':
                         logging.info('[TVTIME] Mark as watched {0} season {1} episode {2}'.format(episode['show_title'], episode['season'], episode['episode']))
                     else:
-                        logging.info('[TVTIME] Cannot mark as watched {0} season {1} episode {2}'.format(episode['show_title'], episode['season'], episode['episode']))
+                        logging.warning('[TVTIME] Cannot mark as watched {0} season {1} episode {2}'.format(episode['show_title'], episode['season'], episode['episode']))
 
     def request(self, url, method='GET', data={}):
         r = requests.request(
