@@ -3,6 +3,7 @@ import logging
 import requests
 import xml.etree.ElementTree as ET
 import datetime
+import sys
 
 
 class Plex(object):
@@ -27,20 +28,42 @@ class Plex(object):
             if show is not None:
                 if show_title not in recently_watched:
                     recently_watched[show_title] = {}
+                    recently_watched[show_title]['show_title'] = show_title
+                    try:
+                        recently_watched[show_title]['original_title'] = show.info()['original_name']
+                    except:
+                        recently_watched[show_title]['original_title'] = show.info()['original_title']
+                    recently_watched[show_title]['tmdb_id'] = show.info()['id']
+                    external_ids = self.get_external_ids(show)
+                    try:
+                        recently_watched[show_title]['tvdb_id'] = external_ids['tvdb_id']
+                    except:
+                        recently_watched[show_title]['tvdb_id'] = external_ids
+                    recently_watched[show_title]['Seasons'] = []
                 if season_number not in recently_watched[show_title]:
-                    recently_watched[show_title][season_number] = {}
-                    recently_watched[show_title][season_number]['episodes'] = []
-                    recently_watched[show_title][season_number]['tmdb_id'] = show['id']
-                    recently_watched[show_title][season_number]['tvdb_id'] = self.tmdb.get_external_ids(show)['tvdb_id']
-                    recently_watched[show_title][season_number]['alias'] = self.getAlias(show, season_number)
-                recently_watched[show_title][season_number]['episodes'].append(episode)
+                    season = {}
+                    season['season'] = season_number
+                    season['alias'] = self.getAlias(show, season_number)
+                    season['episodes'] = []
+                    recently_watched[show_title]['Seasons'].append(season)
+                season['episodes'].append(episode)
         return recently_watched
+
+    def get_external_ids(self, show):
+        try:
+            return self.tmdb.get_external_ids(show)
+        except:
+            # TODO USE TVDB TO SEARCH SHOW_TITLE AND GET SHOW_ID
+            return ''
 
     def getAlias(self, show, seasonNb):
         """
 
         """
-        return self.tmdb.get_season_alias(show['id'], seasonNb)
+        try:
+            return self.tmdb.get_season_alias(show.info()['id'], seasonNb)
+        except:
+            return ''
 
     def get_history(self):
         """

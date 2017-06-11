@@ -10,21 +10,38 @@ class Tmdb(object):
         tmdb.API_KEY = api_key
         self.cache = {}
 
-    def get_show(self, show_title):
+    def search_tv(self, show_title):
         show = None
-        if show_title in self.cache:
-            return self.cache[show_title]
         search = tmdb.Search()
         search.tv(query=show_title, language=self.language)
         try:
-            show = search.results[0]
+            show = tmdb.TV(search.results[0]['id'])
             self.cache[show_title] = show
         except IndexError as e:
-            logging.warning("[TMDB] Unable to find {}".format(show_title))
+            logging.warning("Unable to find show {}".format(show_title))
+        return show
+
+    def search_movie(self, show_title):
+        show = None
+        search = tmdb.Search()
+        search.movie(query=show_title, language=self.language)
+        try:
+            show = tmdb.Movies(search.results[0]['id'])
+            self.cache[show_title] = show
+        except IndexError as e:
+            logging.warning("Unable to find movie {}".format(show_title))
+        return show
+
+    def get_show(self, show_title):
+        if show_title in self.cache:
+            return self.cache[show_title]
+        show = self.search_tv(show_title)
+        if show is None:
+            show = self.search_movie(show_title)
         return show
 
     def get_external_ids(self, show):
-        return tmdb.TV(show['id']).external_ids()
+        return show.external_ids()
 
     def get_season_details(self, show_id, season_number):
         return tmdb.TV_Seasons(show_id, season_number)

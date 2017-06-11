@@ -43,19 +43,20 @@ class TVTIME:
 
     def update(self, episodes):
         for show_key, show in episodes.items():
-            for season_key, season in show.items():
+            for season in show['Seasons']:
                 for episode in season['episodes']:
                     r = self.request(
                             method='POST',
                             url=CONSTANTS.TVTIME_CHECKIN,
                             data={'access_token': self.token,
-                                  'show_id': season['tvdb_id'],
-                                  'season_number': episode['season'],
-                                  'number': episode['episode']})
+                                  'show_id': show['tvdb_id'],
+                                  'season_number': season['season'],
+                                  'number': episode['episode'],
+                                  'auto_follow': 1})
                     if r['result'] == 'OK':
-                        logging.info('[TVTIME] Mark as watched {0} season {1} episode {2}'.format(episode['show_title'], episode['season'], episode['episode']))
+                        logging.info('Mark as watched {0} season {1} episode {2}'.format(show['show_title'], season['season'], episode['episode']))
                     else:
-                        logging.warning('[TVTIME] Cannot mark as watched {0} season {1} episode {2}'.format(episode['show_title'], episode['season'], episode['episode']))
+                        logging.warning('Cannot mark as watched {0} season {1} episode {2}'.format(show['show_title'], season['season'], episode['episode']))
 
     def request(self, url, method='GET', data={}):
         r = requests.request(

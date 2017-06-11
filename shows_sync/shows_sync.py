@@ -9,7 +9,8 @@ import sys
 global connected_providers
 connected_providers = []
 
-class Daemon(DaemonLite) :
+
+class Daemon(DaemonLite):
     def __init__(self, pidFile, configFile):
         DaemonLite.__init__(self, pidFile=pidFile)
         self.Tmdb = None
@@ -18,7 +19,7 @@ class Daemon(DaemonLite) :
         self.config_file = configFile
         self.extract_config()
 
-    def run(self) :
+    def run(self):
         while True:
             self.update_providers()
             time.sleep(self.delay)
@@ -62,8 +63,8 @@ if __name__ == '__main__':
     parser.add_argument('--pid', help="Path to pid file", type=str, default='/var/run/sync_shows.pid')
     parser.add_argument('--log', help="Path to log file", type=str, default='/var/log/sync_shows.log')
     parser.add_argument('--fg', help="Run the program in the foreground", action='store_true')
-    parser.add_argument('--debug', help="Debug mode", action="store_const", dest="loglevel", const=logging.DEBUG, default=logging.WARNING)
-    parser.add_argument('--verbose', help="Be verbose", action="store_const", dest="loglevel", const=logging.INFO)
+    parser.add_argument('--debug', help="Debug mode", action="store_const", dest="loglevel", const=logging.DEBUG, default=logging.INFO)
+    # parser.add_argument('--verbose', help="Be verbose", action="store_const", dest="loglevel", const=logging.INFO)
     args = parser.parse_args()
 
     logging.basicConfig(
