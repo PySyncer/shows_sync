@@ -26,8 +26,9 @@ def install():
         packages=find_packages(),
         install_requires=[
             'requests',
-            'bs4',
-            'tmdbsimple'
+            'tmdbsimple',
+            'DaemonLite',
+            'tvdb-client'
         ],
     )
 
