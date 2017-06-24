@@ -4,7 +4,7 @@ import constants as CONSTANTS
 
 
 class TVDB(object):
-	
+
     def __init__(self, username, account_identifier, api_key):
         self.username = username
         self.account_identifier = account_identifier
@@ -28,4 +28,4 @@ class TVDB(object):
 
     def get_show(self, id):
         show = self.tvdb.get_series(series_id=id)
-        return show    
+        return show['data'] 

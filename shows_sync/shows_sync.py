@@ -36,7 +36,7 @@ class Daemon(DaemonLite):
 
         self.Tmdb = tmdb.Tmdb(api_key=config['TMDB']['api_key'], language=config['TMDB']['language'])
         self.tvdb = tvdb.TVDB(config['TVDB']['username'], config['TVDB']['account_identifier'], config['TVDB']['api_key'])
-        self.Plex = plex.Plex(url=config['Plex']['url'], token=config['Plex']['token'], tmdb=self.Tmdb, tvdb=self.Tvdb)
+        self.Plex = plex.Plex(url=config['Plex']['url'], token=config['Plex']['token'], tmdb=self.Tmdb, tvdb=self.tvdb)
 
         if config['DEFAULT']['delay']:
             try:

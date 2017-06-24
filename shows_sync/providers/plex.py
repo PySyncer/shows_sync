@@ -30,7 +30,7 @@ class Plex(object):
                 show = self.tmdb.get_show(show_title)
                 if show is not None:
                     recently_watched[show_title]['tmdb'] = {}
-                    recently_watched[show_title]['tmdb'] = tmdb_data(show, show_title, season_number, episode_number, recently_watched)
+                    recently_watched[show_title]['tmdb'] = self.tmdb_data(episode, show, show_title, season_number, episode_number, recently_watched)
                     try:
                         tvdb_id = self.get_external_ids(show)['tvdb_id']
                     except:
@@ -40,13 +40,11 @@ class Plex(object):
                 else:
                     show_id = self.tvdb.search(show_title)[0]['id']
                     show = self.tvdb.get_show(show_id)
-                print(show)
                 recently_watched[show_title]['tvdb'] = {}
-                recently_watched[show_title]['tvdb'] = tvdb_data(show, show_title, season_number, episode_number, recently_watched)
-        print(recently_watched)
+                recently_watched[show_title]['tvdb'] = self.tvdb_data(episode, show, show_title, season_number, episode_number, recently_watched)
         return recently_watched
 
-    def tmdb_data(show, show_title, season_number, episode_number, recently_watched):
+    def tmdb_data(self, episode, show, show_title, season_number, episode_number, recently_watched):
         tmdb = {}
         tmdb['show_title'] = show_title
         try:
@@ -64,14 +62,14 @@ class Plex(object):
         season['episodes'].append(episode)
         return tmdb
 
-    def tvdb_data(show, show_title, season_number, episode_number, recently_watched):
+    def tvdb_data(self, episode, show, show_title, season_number, episode_number, recently_watched):
         tvdb = {}
         tvdb['show_title'] = show_title
         try:
             tvdb['original_title'] = show['seriesName']
         except:
             tvdb['original_title'] = show['moviesName']
-        tvdb['tmdb_id'] = show['id']
+        tvdb['tvdb_id'] = show['id']
         tvdb['Seasons'] = []
         if season_number not in recently_watched[show_title]:
             season = {}

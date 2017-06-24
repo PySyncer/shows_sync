@@ -46,26 +46,26 @@ class TVTIME:
             method='POST',
             url=CONSTANTS.TVTIME_FOLLOW,
             data={'access_token': self.token,
-                  'show_id': show['tvdb_id']})
+                  'show_id': show['tvdb']['tvdb_id']})
         if r['result'] == 'OK':
-            logging.info('Follow {0}.'.format(show['show_title']))
+            logging.info('Follow {0}.'.format(show['tvdb']['show_title']))
         else:
-            logging.warning('Cannot Follow {0} with message : {1}.'.format(show['show_title'], r['message']))
+            logging.warning('Cannot Follow {0} with message : {1}.'.format(show['tvdb']['show_title'], r['message']))
 
     def update(self, episodes):
-        for show_key, show in episodes['tvdb'].items():
+        for show_key, show in episodes.items():
             self.follow(show)
-            for season in show['Seasons']:
+            for season in show['tvdb']['Seasons']:
                 for episode in season['episodes']:
                     r = self.request(
                             method='POST',
                             url=CONSTANTS.TVTIME_CHECKIN,
                             data={'access_token': self.token,
-                                  'show_id': show['tvdb_id'],
+                                  'show_id': show['tvdb']['tvdb_id'],
                                   'season_number': season['season'],
                                   'number': episode['episode']})
                     if r['result'] == 'OK':
-                        logging.info('Mark as watched {0} season {1} episode {2}'.format(show['show_title'], season['season'], episode['episode']))
+                        logging.info('Mark as watched {0} season {1} episode {2}'.format(show['tvdb']['show_title'], season['season'], episode['episode']))
                     else:
                         logging.warning('Cannot mark as watched {0} season {1} episode {2} with message : {3}.'.format(show['show_title'], season['season'], episode['episode'], r['message']))
 
