@@ -7,12 +7,13 @@ import sys
 
 
 class Plex(object):
-    def __init__(self, url, token, tmdb):
+    def __init__(self, url, token, tmdb, tvdb):
         """
         """
         self.url = url
         self.token = token
         self.tmdb = tmdb
+        self.tvdb = tvdb
 
     def get_watched(self):
         """
@@ -24,37 +25,68 @@ class Plex(object):
             show_title = episode['show_title']
             episode_number = episode['episode']
             logging.debug('Processing {} S{}E{}'.format(show_title, season_number, episode_number))
-            show = self.tmdb.get_show(show_title)
-            if show is not None:
-                if show_title not in recently_watched:
-                    recently_watched[show_title] = {}
-                    recently_watched[show_title]['show_title'] = show_title
+            if show_title not in recently_watched:
+                recently_watched[show_title] = {}
+                show = self.tmdb.get_show(show_title)
+                if show is not None:
+                    recently_watched[show_title]['tmdb'] = {}
+                    recently_watched[show_title]['tmdb'] = tmdb_data(show, show_title, season_number, episode_number, recently_watched)
                     try:
-                        recently_watched[show_title]['original_title'] = show.info()['original_name']
+                        tvdb_id = self.get_external_ids(show)['tvdb_id']
                     except:
-                        recently_watched[show_title]['original_title'] = show.info()['original_title']
-                    recently_watched[show_title]['tmdb_id'] = show.info()['id']
-                    external_ids = self.get_external_ids(show)
-                    try:
-                        recently_watched[show_title]['tvdb_id'] = external_ids['tvdb_id']
-                    except:
-                        recently_watched[show_title]['tvdb_id'] = external_ids
-                    recently_watched[show_title]['Seasons'] = []
-                if season_number not in recently_watched[show_title]:
-                    season = {}
-                    season['season'] = season_number
-                    season['alias'] = self.getAlias(show, season_number)
-                    season['episodes'] = []
-                    recently_watched[show_title]['Seasons'].append(season)
-                season['episodes'].append(episode)
+                        tvdb_id = None
+                if tvdb_id is not None:
+                    show = self.tvdb.get_show(tvdb_id)
+                else:
+                    show_id = self.tvdb.search(show_title)[0]['id']
+                    show = self.tvdb.get_show(show_id)
+                print(show)
+                recently_watched[show_title]['tvdb'] = {}
+                recently_watched[show_title]['tvdb'] = tvdb_data(show, show_title, season_number, episode_number, recently_watched)
+        print(recently_watched)
         return recently_watched
+
+    def tmdb_data(show, show_title, season_number, episode_number, recently_watched):
+        tmdb = {}
+        tmdb['show_title'] = show_title
+        try:
+            tmdb['original_title'] = show.info()['original_name']
+        except:
+            tmdb['original_title'] = show.info()['original_title']
+        tmdb['tmdb_id'] = show.info()['id']
+        tmdb['Seasons'] = []
+        if season_number not in recently_watched[show_title]:
+            season = {}
+            season['season'] = season_number
+            season['alias'] = self.getAlias(show, season_number)
+            season['episodes'] = []
+            tmdb['Seasons'].append(season)
+        season['episodes'].append(episode)
+        return tmdb
+
+    def tvdb_data(show, show_title, season_number, episode_number, recently_watched):
+        tvdb = {}
+        tvdb['show_title'] = show_title
+        try:
+            tvdb['original_title'] = show['seriesName']
+        except:
+            tvdb['original_title'] = show['moviesName']
+        tvdb['tmdb_id'] = show['id']
+        tvdb['Seasons'] = []
+        if season_number not in recently_watched[show_title]:
+            season = {}
+            season['season'] = season_number
+            season['alias'] = show['aliases']
+            season['episodes'] = []
+            tvdb['Seasons'].append(season)
+        season['episodes'].append(episode)
+        return tvdb
 
     def get_external_ids(self, show):
         try:
             return self.tmdb.get_external_ids(show)
         except:
-            # TODO USE TVDB TO SEARCH SHOW_TITLE AND GET SHOW_ID
-            return ''
+            return None
 
     def getAlias(self, show, seasonNb):
         """

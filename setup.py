@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os
+import MacOS
 from setuptools import setup, find_packages
 
 

@@ -53,7 +53,7 @@ class TVTIME:
             logging.warning('Cannot Follow {0} with message : {1}.'.format(show['show_title'], r['message']))
 
     def update(self, episodes):
-        for show_key, show in episodes.items():
+        for show_key, show in episodes['tvdb'].items():
             self.follow(show)
             for season in show['Seasons']:
                 for episode in season['episodes']:

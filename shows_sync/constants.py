@@ -17,3 +17,6 @@ TVTIME_DEVICE_CODE = urljoin(TVTIME_BASEURL, '/v1/oauth/device/code')
 TVTIME_TOKEN = urljoin(TVTIME_BASEURL, '/v1/oauth/access_token')
 TVTIME_CHECKIN = urljoin(TVTIME_BASEURL, '/v1/checkin')
 TVTIME_FOLLOW = urljoin(TVTIME_BASEURL, '/v1/follow')
+
+TVDB_ERROR_LOGIN = 'Pease check your credentials, we couldn\'t login to your TVDB account.'
+TVDB_SUCCESS_LOGIN = 'Successful login to your TVDB account.'

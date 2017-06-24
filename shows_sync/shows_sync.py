@@ -1,5 +1,5 @@
 import configparser
-from providers import plex, myanimelist, tmdb, tvtime
+from providers import plex, myanimelist, tmdb, tvtime, tvdb
 from DaemonLite import DaemonLite
 import logging
 import time
@@ -14,6 +14,7 @@ class Daemon(DaemonLite):
     def __init__(self, pidFile, configFile):
         DaemonLite.__init__(self, pidFile=pidFile)
         self.Tmdb = None
+        self.Tvdb = None
         self.Plex = None
         self.delay = 3600
         self.config_file = configFile
@@ -34,7 +35,8 @@ class Daemon(DaemonLite):
         config.read(self.config_file)
 
         self.Tmdb = tmdb.Tmdb(api_key=config['TMDB']['api_key'], language=config['TMDB']['language'])
-        self.Plex = plex.Plex(url=config['Plex']['url'], token=config['Plex']['token'], tmdb=self.Tmdb)
+        self.tvdb = tvdb.TVDB(config['TVDB']['username'], config['TVDB']['account_identifier'], config['TVDB']['api_key'])
+        self.Plex = plex.Plex(url=config['Plex']['url'], token=config['Plex']['token'], tmdb=self.Tmdb, tvdb=self.Tvdb)
 
         if config['DEFAULT']['delay']:
             try:
