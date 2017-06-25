@@ -35,28 +35,27 @@ class Plex(object):
             :rtype: list
         """
         recently_watched = {}
+        tmdb_show = {}
         # Get the history -2 days from plex
         episodes = self.get_history()
         for episode in episodes:
-            tmdb_show = None
             season_number = episode['season']
             show_title = episode['show_title']
             episode_number = episode['episode']
             logging.debug('Processing {} S{}E{}'.format(show_title, season_number, episode_number))
-
             if show_title not in recently_watched:
                 recently_watched[show_title] = {}
                 recently_watched[show_title]['tmdb'] = {}
                 recently_watched[show_title]['tvdb'] = {}
-                tmdb_show = self.tmdb.get_show(show_title)
-            if tmdb_show is not None:
-                recently_watched[show_title]['tmdb'] = self.tmdb_get_metadata_for_show(tmdb_show)
-                tvdb_show_id = self.get_tvdb_id_from_tmdb(tmdb_show, show_title)
+                tmdb_show[show_title] = self.tmdb.get_show(show_title)
+            if tmdb_show.get(show_title, None) is not None:
+                recently_watched[show_title]['tmdb'] = self.tmdb_get_metadata_for_show(tmdb_show[show_title])
+                tvdb_show_id = self.get_tvdb_id_from_tmdb(tmdb_show[show_title], show_title)
                 show = self.tvdb.get_show(tvdb_show_id)
                 recently_watched[show_title]['tvdb'] = self.tvdb_get_metadata_for_show(show)
                 episode['absoluteNumber'] = self.tvdb.get_absolute_number(season_number, episode_number, tvdb_show_id)
                 if not self.check_season_exist(recently_watched[show_title]['tmdb']['seasons'], season_number):
-                    recently_watched[show_title]['tmdb']['seasons'][season_number] = self.tmdb_get_metadata_for_season(tmdb_show, season_number)
+                    recently_watched[show_title]['tmdb']['seasons'][season_number] = self.tmdb_get_metadata_for_season(tmdb_show[show_title], season_number)
                     recently_watched[show_title]['tvdb']['seasons'][season_number] = self.tvdb_get_metadata_for_season(show)
                 recently_watched[show_title]['tmdb']['seasons'][season_number]['episodes'].append(episode)
                 recently_watched[show_title]['tvdb']['seasons'][season_number]['episodes'].append(episode)
