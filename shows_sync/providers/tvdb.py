@@ -28,4 +28,18 @@ class TVDB(object):
 
     def get_show(self, id):
         show = self.tvdb.get_series(series_id=id)
-        return show['data'] 
+        return show['data']
+
+    def get_series_episodes(self, show_id, aired_season=None, aired_episode=None):
+        episode = self.tvdb.get_series_episodes(show_id, aired_season=aired_season, aired_episode=aired_episode)
+        if episode['data']:
+            return episode['data']
+        else:
+            return None
+
+    def get_episode(self, episode_id):
+        return self.tvdb.get_episode(episode_id)
+
+    def get_absolute_number(self, season_number, episode_number, tvdb_id):
+        tvdb_episode_id = self.tvdb.get_series_episodes(tvdb_id, aired_season=season_number, aired_episode=episode_number)
+        return tvdb_episode_id['data'][0]['absoluteNumber']

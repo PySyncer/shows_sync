@@ -4,7 +4,7 @@ import requests
 import constants as CONSTANTS
 import urllib
 import logging
-import sys
+
 
 class MyAnimeList(object):
 
@@ -31,6 +31,7 @@ class MyAnimeList(object):
         return True
 
     def update(self, episodes):
+        print(episodes)
         logging.warn('MAL Provider not available, rework in progress')
         pass
         # for episode in self.reduce(episodes):

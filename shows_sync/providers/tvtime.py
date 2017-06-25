@@ -50,7 +50,8 @@ class TVTIME:
         if r['result'] == 'OK':
             logging.info('Follow {0}.'.format(show['tvdb']['show_title']))
         else:
-            logging.warning('Cannot Follow {0} with message : {1}.'.format(show['tvdb']['show_title'], r['message']))
+            logging.warning('Cannot Follow {0} with message : {1}.'.format(
+                            show['tvdb']['show_title'], r['message']))
 
     def update(self, episodes):
         for show_key, show in episodes.items():
