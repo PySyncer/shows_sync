@@ -28,7 +28,6 @@ class Daemon(DaemonLite):
 
     def update_providers(self):
         episodes = self.Plex.get_watched()
-        sys.exit()
         for provider in connected_providers:
             provider.update(episodes)
 
@@ -46,10 +45,10 @@ class Daemon(DaemonLite):
             except Exception as e:
                 logging.warning("Delay value is not valid")
         # MyAnimeList
-        if config['MyAnimeList']['enabled']:
-            connected_providers.append(myanimelist.MyAnimeList(
-                config['MyAnimeList']['username'],
-                config['MyAnimeList']['password']))
+        # if config['MyAnimeList']['enabled']:
+        #     connected_providers.append(myanimelist.MyAnimeList(
+        #         config['MyAnimeList']['username'],
+        #         config['MyAnimeList']['password']))
 
         # TV TIME
         if config['TV Time']['enabled']:
