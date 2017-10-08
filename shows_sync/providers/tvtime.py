@@ -59,35 +59,39 @@ class TVTIME:
             for season_key, season in show['tvdb']['seasons'].items():
                 for episode in season['episodes']:
                     r = self.request(
-                            method='POST',
-                            url=CONSTANTS.TVTIME_CHECKIN,
-                            data={'access_token': self.token,
-                                  'show_id': show['tvdb']['tvdb_id'],
-                                  'season_number': season_key,
-                                  'number': episode['episode']})
+                        method='POST',
+                        url=CONSTANTS.TVTIME_CHECKIN,
+                        data={
+                            'access_token': self.token,
+                            'show_id': show['tvdb']['tvdb_id'],
+                            'season_number': season_key,
+                            'number': episode['episode']
+                        }
+                    )
                     if r['result'] == 'OK':
-                        logging.info('Mark as watched {0} season {1} episode {2}'.format(show['tvdb']['original_title'], season_key, episode['episode']))
+                        logging.info('Mark as watched {0} season {1} episode {2}'.format(
+                            show['tvdb']['original_title'],
+                            season_key,
+                            episode['episode']
+                        )
+                    )
                     else:
-                        logging.warning('Cannot mark as watched {0} season {1} episode {2} with message : {3}.'.format(show_key, season_key, episode['episode'], r['message']))
+                        logging.warning('Cannot mark as watched {0} season {1} episode {2} with message : {3}.'.format(
+                            show_key,
+                            season_key,
+                            episode['episode'],
+                            r['message']
+                        ))
 
     def request(self, url, method='GET', data={}):
         r = requests.request(
             method=method,
             url=url,
             data=data,
-            )
-        try:
-            r2 = r.json()
-            if r2['message'] == 'API rate limit exceeded.':
-                logging.info('Waiting 1 minute for new API slots.')
-                time.sleep(65)
-                self.request(url, method=method, data=data)
-        except:
-            try:
-                if r.response is 503:
-                    logging.info('Waiting 1 minute for new API slots.')
-                    time.sleep(65)
-                    self.request(url, method=method, data=data)
-            except:
-                pass
-        return r.json()
+        )
+        if r.status_code is 200:
+            return r.json()
+        else:
+            logging.info('Waiting 1 minute for new API slots.')
+            time.sleep(65)
+            return self.request(url, method=method, data=data)

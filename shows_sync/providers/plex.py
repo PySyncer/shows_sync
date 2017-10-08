@@ -40,27 +40,39 @@ class Plex(object):
         tmdb_show = {}
         # Get the history -2 days from plex
         episodes = self.get_history()
+        # For each episode
         for episode in episodes:
+            # Get season
             season_number = episode['season']
+            # Get title
             show_title = episode['show_title']
+            # Get episode number (aka 01 02 etc..)
             episode_number = episode['episode']
             logging.debug('Processing {} S{}E{}'.format(show_title, season_number, episode_number))
+            # If the show has never been processed
             if show_title not in recently_watched:
+                # We store one in recently_watched
                 recently_watched[show_title] = {}
                 recently_watched[show_title]['tmdb'] = {}
                 recently_watched[show_title]['tvdb'] = {}
-                tmdb_show[show_title] = self.tmdb.get_show(show_title)
-            if tmdb_show.get(show_title, None) is not None:
+                # Getting info in TMDB
+                tmdb_show[show_title] = self.tmdb.get_show(show_title)            
+                 # We retrieve metadata for the show in TMDB
                 recently_watched[show_title]['tmdb'] = self.tmdb_get_metadata_for_show(tmdb_show[show_title])
+                # We retrieve the TVDB id from TMDB
                 tvdb_show_id = self.get_tvdb_id_from_tmdb(tmdb_show[show_title], show_title)
-                show = self.tvdb.get_show(tvdb_show_id)
-                recently_watched[show_title]['tvdb'] = self.tvdb_get_metadata_for_show(show)
-                episode['absoluteNumber'] = self.tvdb.get_absolute_number(season_number, episode_number, tvdb_show_id)
-                if not self.check_season_exist(recently_watched[show_title]['tmdb']['seasons'], season_number):
-                    recently_watched[show_title]['tmdb']['seasons'][season_number] = self.tmdb_get_metadata_for_season(tmdb_show[show_title], season_number)
-                    recently_watched[show_title]['tvdb']['seasons'][season_number] = self.tvdb_get_metadata_for_season(show)
-                recently_watched[show_title]['tmdb']['seasons'][season_number]['episodes'].append(episode)
-                recently_watched[show_title]['tvdb']['seasons'][season_number]['episodes'].append(episode)
+                # We retrieve the show from TVDB
+                tvdb_show = self.tvdb.get_show(tvdb_show_id)
+                recently_watched[show_title]['tvdb'] = self.tvdb_get_metadata_for_show(tvdb_show)
+
+            episode['absoluteNumber'] = self.tvdb.get_absolute_number(season_number, episode_number, recently_watched[show_title]['tvdb']['tvdb_id'] )
+            if not self.check_season_exist(recently_watched[show_title]['tmdb']['seasons'], season_number):
+                recently_watched[show_title]['tmdb']['seasons'][season_number] = self.tmdb_get_metadata_for_season(tmdb_show[show_title], season_number)
+                recently_watched[show_title]['tvdb']['seasons'][season_number] = self.tvdb_get_metadata_for_season(self.tvdb.get_show(recently_watched[show_title]['tvdb']['tvdb_id']))
+                recently_watched[show_title]['tmdb']['seasons'][season_number]['episodes'] = []
+                recently_watched[show_title]['tvdb']['seasons'][season_number]['episodes'] = []
+            recently_watched[show_title]['tmdb']['seasons'][season_number]['episodes'].append(episode)
+            recently_watched[show_title]['tvdb']['seasons'][season_number]['episodes'].append(episode)
         return recently_watched
 
     def get_tvdb_id_from_tmdb(self, tmdb_show, show_title):
