@@ -5,6 +5,7 @@ import logging
 import time
 import argparse
 import sys
+import json
 
 global connected_providers
 connected_providers = []
@@ -27,6 +28,7 @@ class Daemon(DaemonLite):
 
     def update_providers(self):
         episodes = self.Plex.get_watched()
+        sys.exit()
         for provider in connected_providers:
             provider.update(episodes)
 

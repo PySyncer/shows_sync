@@ -3,6 +3,8 @@ import logging
 import requests
 import xml.etree.ElementTree as ET
 import datetime
+import json
+import sys
 
 
 class Plex(object):

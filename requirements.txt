@@ -1,4 +1,3 @@
 requests
 tmdbsimple
 DaemonLite
-tvdb-client

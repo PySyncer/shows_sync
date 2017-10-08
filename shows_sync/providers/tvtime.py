@@ -75,12 +75,19 @@ class TVTIME:
             method=method,
             url=url,
             data=data,
-            ).json()
+            )
         try:
-            if r['message'] == 'API rate limit exceeded.':
+            r2 = r.json()
+            if r2['message'] == 'API rate limit exceeded.':
                 logging.info('Waiting 1 minute for new API slots.')
                 time.sleep(65)
                 self.request(url, method=method, data=data)
         except:
-            pass
-        return r
+            try:
+                if r.response is 503:
+                    logging.info('Waiting 1 minute for new API slots.')
+                    time.sleep(65)
+                    self.request(url, method=method, data=data)
+            except:
+                pass
+        return r.json()

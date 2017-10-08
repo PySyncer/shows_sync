@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import MacOS
+import os
 from setuptools import setup, find_packages
 
 
@@ -7,8 +7,8 @@ def install():
     desc = 'A Python service to sync what you watch!'
     ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 
-    with open(os.path.join(ROOT, 'readme.md'), 'r') as r:
-    long_description = r.read()
+    with open(os.path.join(ROOT, 'README.md'), 'r') as r:
+        long_description = r.read()
 
     setup(
         name='shows_sync',
@@ -33,8 +33,7 @@ def install():
         install_requires=[
             'requests',
             'tmdbsimple',
-            'DaemonLite',
-            'tvdb-client'
+            'DaemonLite'
         ],
     )
 
