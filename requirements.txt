@@ -1,3 +1,4 @@
 requests
 tmdbsimple
 DaemonLite
+lxml
