@@ -2,3 +2,5 @@ requests
 tmdbsimple
 DaemonLite
 lxml
+git+https://github.com/PySyncer/tvdb_client.git
+git+https://github.com/PySyncer/pymal.git
