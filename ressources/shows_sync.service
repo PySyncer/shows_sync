@@ -1,0 +1,15 @@
+### Configuration
+
+[Unit]
+Description=ShowsSync Daemon
+
+[Service]
+User=shows_sync
+Group=shows_sync
+
+Type=forking
+GuessMainPID=no
+ExecStart=/usr/bin/python /opt/shows_sync/shows_sync/shows_sync.py
+
+[Install]
+WantedBy=multi-user.target
