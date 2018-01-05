@@ -1,6 +1,6 @@
-import configparser
 from providers import plex, myanimelist, tmdb, tvtime, tvdb
 from DaemonLite import DaemonLite
+import configparser
 import logging
 import time
 import argparse
@@ -9,7 +9,8 @@ import json
 
 global connected_providers
 connected_providers = []
-
+global already_proccess
+already_proccess = set([])
 
 class Daemon(DaemonLite):
     def __init__(self, pidFile, configFile):
@@ -29,7 +30,7 @@ class Daemon(DaemonLite):
     def update_providers(self):
         episodes = self.Plex.get_watched()
         for provider in connected_providers:
-            provider.update(episodes)
+            provider.update(episodes, already_proccess)
 
     def extract_config(self):
         config = configparser.ConfigParser()

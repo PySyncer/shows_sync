@@ -53,35 +53,45 @@ class TVTIME:
             logging.warning('Cannot Follow {0} with message : {1}.'.format(
                             show['tvdb']['show_title'], r['message']))
 
-    def update(self, episodes):
+    def update(self, episodes, already_proccess):
         for show_key, show in episodes.items():
-            self.follow(show, show_key)
+            if str(show['tvdb']['tvdb_id']) not in str(already_proccess):
+                self.follow(show, show_key)
             for season_key, season in show['tvdb']['seasons'].items():
                 for episode in season['episodes']:
-                    r = self.request(
-                        method='POST',
-                        url=CONSTANTS.TVTIME_CHECKIN,
-                        data={
-                            'access_token': self.token,
-                            'show_id': show['tvdb']['tvdb_id'],
-                            'season_number': season_key,
-                            'number': episode['episode']
-                        }
-                    )
-                    if r['result'] == 'OK':
-                        logging.info('Mark as watched {0} season {1} episode {2}'.format(
-                            show['tvdb']['original_title'],
-                            season_key,
-                            episode['episode']
+                    episode_key = self.set_episode_key(show, season_key, episode['episode'])
+                    print(episode_key)
+                    if episode_key not in already_proccess:
+                        r = self.request(
+                            method='POST',
+                            url=CONSTANTS.TVTIME_CHECKIN,
+                            data={
+                                'access_token': self.token,
+                                'show_id': show['tvdb']['tvdb_id'],
+                                'season_number': season_key,
+                                'number': episode['episode']
+                            }
                         )
-                    )
-                    else:
-                        logging.warning('Cannot mark as watched {0} season {1} episode {2} with message : {3}.'.format(
-                            show_key,
-                            season_key,
-                            episode['episode'],
-                            r['message']
-                        ))
+                        if r['result'] == 'OK':
+                            logging.info('Mark as watched {0} season {1} episode {2}'.format(
+                                show['tvdb']['original_title'],
+                                season_key,
+                                episode['episode']
+                                )
+                            )
+                            already_proccess.add(episode_key)
+                        else:
+                            logging.warning('Cannot mark as watched {0} season {1} episode {2} with message : {3}.'.format(
+                                show_key,
+                                season_key,
+                                episode['episode'],
+                                r['message']
+                            ))
+
+    def set_episode_key(self, show, season_key, episode):
+        if show['tvdb']['tvdb_id'] is not None:
+            return '0:{}:{}:{}'.format(str(show['tvdb']['tvdb_id']), season_key, episode)
+        return '1:{}:{}:{}'.format(str(show['tmdb']['tmdb_id']), season_key, episode)    
 
     def request(self, url, method='GET', data={}):
         r = requests.request(

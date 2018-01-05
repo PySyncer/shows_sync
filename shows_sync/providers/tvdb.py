@@ -2,7 +2,6 @@ from tvdb_client import ApiV2Client
 import logging
 import constants as CONSTANTS
 
-
 class TVDB(object):
 
     def __init__(self, username, account_identifier, api_key):
