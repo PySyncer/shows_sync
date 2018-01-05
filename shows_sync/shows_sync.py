@@ -1,4 +1,7 @@
-from providers import plex, myanimelist, tmdb, tvtime, tvdb
+from providers.input import plex
+from providers.metadata import tmdb, tvdb
+from providers.output import tvtime
+
 from DaemonLite import DaemonLite
 import configparser
 import logging
@@ -9,8 +12,6 @@ import json
 
 global connected_providers
 connected_providers = []
-global already_proccess
-already_proccess = set([])
 
 class Daemon(DaemonLite):
     def __init__(self, pidFile, configFile):
@@ -30,7 +31,7 @@ class Daemon(DaemonLite):
     def update_providers(self):
         episodes = self.Plex.get_watched()
         for provider in connected_providers:
-            provider.update(episodes, already_proccess)
+            provider.update(episodes)
 
     def extract_config(self):
         config = configparser.ConfigParser()
@@ -56,7 +57,7 @@ class Daemon(DaemonLite):
             try:
                 self.delay = int(config['DEFAULT']['delay'])
             except Exception as e:
-                logging.warning("Delay value is not valid")
+                logging.error("Delay value is not valid")
         # MyAnimeList
         # if config['MyAnimeList']['enabled']:
         #     connected_providers.append(myanimelist.MyAnimeList(
@@ -83,7 +84,6 @@ if __name__ == '__main__':
     parser.add_argument('--log', help="Path to log file", type=str, default='/var/log/shows_sync.log')
     parser.add_argument('--fg', help="Run the program in the foreground", action='store_true')
     parser.add_argument('--debug', help="Debug mode", action="store_const", dest="loglevel", const=logging.DEBUG, default=logging.INFO)
-    # parser.add_argument('--verbose', help="Be verbose", action="store_const", dest="loglevel", const=logging.INFO)
     args = parser.parse_args()
 
     logging.basicConfig(
