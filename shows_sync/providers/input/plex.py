@@ -104,13 +104,18 @@ class Plex(object):
 
     def tmdb_get_metadata_for_show(self, tmdb_show):
             show = {}
-            shows_infos = tmdb_show.info()
-            try:
-                show['original_title'] = shows_infos['original_name']
-            except:
-                show['original_title'] = shows_infos['original_title']
-            show['tmdb_id'] = shows_infos['id']
-            show['seasons'] = {}
+            if tmdb_show is not None:
+                shows_infos = tmdb_show.info()
+                try:
+                    show['original_title'] = shows_infos['original_name']
+                except:
+                    show['original_title'] = shows_infos['original_title']
+                show['tmdb_id'] = shows_infos['id']
+                show['seasons'] = {}
+            else:
+                show['original_title'] = ''
+                show['tmdb_id'] = ''
+                show['seasons'] = {}
             return show
 
     def tvdb_get_metadata_for_show(self, tmdb_show):
